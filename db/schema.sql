@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS people (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   phone TEXT,
+  avatar TEXT,
   github_id TEXT NOT NULL
 );
 
