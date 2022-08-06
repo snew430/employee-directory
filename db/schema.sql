@@ -4,6 +4,8 @@ CREATE DATABASE dir_db;
 
 \c dir_db;
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE IF NOT EXISTS people (
   id SERIAL PRIMARY KEY,
   first_name TEXT NOT NULL,

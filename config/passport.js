@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { hash } = require("../utils/crypto");
 const passport = require("passport");
 const { Person } = require("../models");
 const GitHubStrategy = require("passport-github2").Strategy;
@@ -21,15 +22,16 @@ passport.use(
 
     async function (accessToken, refreshToken, profile, done) {
       try {
+        const hashId = hash(profile.id.toString());
         // check if user already exists in our db
         const { rowCount, rows } = await Person.findUser({
-          github_id: profile.id.toString(),
+          github_id: hashId,
         });
 
         if (rowCount > 0) {
           return done(null, rows[0]);
         } else {
-          return done(null, { github_id: profile.id.toString() });
+          return done(null, { github_id: hashId });
         }
       } catch (err) {
         console.log(err);

@@ -3,14 +3,22 @@ require("dotenv").config();
 const { Person, Address } = require("../../models");
 const { isLoggedIn, hasProfile } = require("../../utils/auth");
 const multer = require("multer");
+const { decrypt, encrypt } = require("../../utils/crypto");
 
 const { upload } = require("../../config/multer");
 
 router.get("/", isLoggedIn, async (req, res) => {
   try {
     const { rows } = await Person.getAll();
-
-    res.status(200).json(rows);
+    let decryptedRows = rows.map((person) => {
+      return {
+        ...person,
+        street: decrypt(person.street),
+        city: decrypt(person.city),
+        state: decrypt(person.state),
+      };
+    });
+    res.status(200).json(decryptedRows);
   } catch (err) {
     console.error(err);
     res.status(500).end();
@@ -34,9 +42,9 @@ router.post("/", hasProfile, async (req, res) => {
       avatar: imgPath,
     };
     const personsAddress = {
-      street: req.body.street,
-      city: req.body.city,
-      state: req.body.state,
+      street: encrypt(req.body.street),
+      city: encrypt(req.body.city),
+      state: encrypt(req.body.state),
     };
     const { rows } = await Person.create(newPersonEnrty);
 
